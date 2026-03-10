@@ -10,7 +10,7 @@ export default function Login() {
     const {user, setUser} = useAuthStore()
 
     const login = () => {
-        window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google-login?returnUrl=https://stapp-itransition-course-project.azurestaticapps.net`
+        window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google-login?returnUrl=${import.meta.env.VITE_RETURN_URL}`
     }
 
     const logout = async () => {
