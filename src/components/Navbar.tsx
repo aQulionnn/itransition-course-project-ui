@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
     AppBar, Toolbar, Typography, IconButton, Button,
-    InputBase, Box, alpha
+    InputBase, Box, alpha, Avatar
 } from '@mui/material'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
 import LightModeIcon from '@mui/icons-material/LightMode'
@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add'
 import { useThemeStore } from '../store/themeStore'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
-import { logout as logoutService } from '../services/authService'
+import { api } from '../services/api'
 
 export default function Navbar() {
     const { mode, toggle } = useThemeStore()
@@ -18,7 +18,11 @@ export default function Navbar() {
     const navigate = useNavigate()
     const [search, setSearch] = useState('')
 
-    const logout = () => { logoutService(); setUser(null); navigate('/login') }
+    const logout = async () => {
+        await api.post('/api/auth/logout')
+        setUser(null)
+        navigate('/login')
+    }
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
@@ -80,7 +84,14 @@ export default function Navbar() {
                 )}
 
                 {user ? (
-                    <Button color="inherit" onClick={logout}>Logout</Button>
+                    <>
+                        <IconButton onClick={() => navigate(`/profile/${user.id}`)} sx={{ p: 0.5 }}>
+                            <Avatar sx={{ width: 32, height: 32, fontSize: 14 }}>
+                                {user.userName?.[0]?.toUpperCase()}
+                            </Avatar>
+                        </IconButton>
+                        <Button color="inherit" onClick={logout}>Logout</Button>
+                    </>
                 ) : (
                     <Button color="inherit" onClick={() => navigate('/login')}>Login</Button>
                 )}

@@ -7,7 +7,7 @@ import { api } from './services/api'
 import { getMe } from './services/authService'
 import Login from './pages/Login'
 import Admin from './pages/Admin'
-// import Profile from './pages/Profile'
+import Profile from './pages/Profile'
 import CreateInventory from './pages/CreateInventory'
 import Home from './pages/Home'
 import InventoryDetail from "./pages/InventoryDetail.tsx";
@@ -41,7 +41,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={!user ? <Login /> : <Navigate to="/" />} />
                         <Route path="/admin" element={user?.isAdmin ? <Admin /> : <Navigate to="/" />} />
-                        {/*<Route path="/profile/:userId" element={<Profile />} />*/}
+                        <Route path="/profile/:userId" element={<Profile />} />
                         <Route path="/inventories/create" element={user ? <CreateInventory /> : <Navigate to="/login" />} />
                         <Route path="/inventories/:id" element={<InventoryDetail />} />
                         <Route path="/inventories/:id/edit" element={<div />} />

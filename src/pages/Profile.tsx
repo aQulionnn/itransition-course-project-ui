@@ -1,43 +1,53 @@
-import { useEffect, useState } from 'react'
-import { useParams } from 'react-router-dom'
+import {useEffect, useState} from 'react'
+import {useParams, useNavigate} from 'react-router-dom'
 import {
     Container, Typography, Box, Avatar, Paper,
-    Table, TableBody, TableCell, TableContainer,
-    TableHead, TableRow, Chip, CircularProgress
+    Table, TableBody, TableCell, TableHead,
+    TableRow, Chip, CircularProgress
 } from '@mui/material'
 import Navbar from '../components/Navbar'
-import { inventoryService } from '../services/inventoryService'
-import type { Inventory } from '../interfaces/inventory'
+import {api} from '../services/api'
+import type {Inventory} from '../interfaces/inventory'
+
+interface ProfileData {
+    userName: string
+    inventories: Inventory[]
+}
 
 export default function Profile() {
-    const { userId } = useParams<{ userId: string }>()
-    const [inventories, setInventories] = useState<Inventory[]>([])
+    const {userId} = useParams<{ userId: string }>()
+    const navigate = useNavigate()
+    const [data, setData] = useState<ProfileData | null>(null)
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
         if (!userId) return
-        inventoryService.getByUserId(userId)
-            .then(setInventories)
+        api.get<ProfileData>(`/api/users/${userId}/inventories`)
+            .then(r => setData(r.data))
             .finally(() => setLoading(false))
     }, [userId])
 
     if (loading) return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
-            <CircularProgress />
+            <CircularProgress/>
         </Box>
     )
 
+    if (!data) return null
+
     return (
         <>
-            <Navbar />
-            <Container maxWidth="lg" sx={{ mt: 4 }}>
+            <Navbar/>
+            <Container maxWidth="lg" sx={{mt: 4}}>
                 <Box display="flex" alignItems="center" gap={2} mb={4}>
-                    <Avatar sx={{ width: 64, height: 64 }} />
-                    <Typography variant="h5">{userId}</Typography>
+                    <Avatar sx={{width: 64, height: 64}}>
+                        {data.userName?.[0]?.toUpperCase()}
+                    </Avatar>
+                    <Typography variant="h5">{data.userName}</Typography>
                 </Box>
 
                 <Typography variant="h6" mb={2}>Inventories</Typography>
-                <TableContainer component={Paper}>
+                <Paper>
                     <Table>
                         <TableHead>
                             <TableRow>
@@ -49,15 +59,27 @@ export default function Profile() {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {inventories.map(inv => (
-                                <TableRow key={inv.id} hover>
+                            {data.inventories.length === 0 && (
+                                <TableRow>
+                                    <TableCell colSpan={5}>
+                                        <Typography variant="body2" color="text.secondary">No inventories.</Typography>
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                            {data.inventories.map(inv => (
+                                <TableRow
+                                    key={inv.id}
+                                    hover
+                                    sx={{cursor: 'pointer'}}
+                                    onClick={() => navigate(`/inventories/${inv.id}`)}
+                                >
                                     <TableCell>{inv.title}</TableCell>
                                     <TableCell>{inv.categoryName}</TableCell>
                                     <TableCell>{inv.itemsCount}</TableCell>
                                     <TableCell>
                                         <Box display="flex" gap={0.5} flexWrap="wrap">
                                             {inv.tags.map(tag => (
-                                                <Chip key={tag} label={tag} size="small" />
+                                                <Chip key={tag} label={tag} size="small"/>
                                             ))}
                                         </Box>
                                     </TableCell>
@@ -72,7 +94,7 @@ export default function Profile() {
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
+                </Paper>
             </Container>
         </>
     )
