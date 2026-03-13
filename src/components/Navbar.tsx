@@ -10,7 +10,6 @@ import AddIcon from '@mui/icons-material/Add'
 import { useThemeStore } from '../store/themeStore'
 import { useAuthStore } from '../store/authStore'
 import { useNavigate } from 'react-router-dom'
-import { api } from '../services/api'
 
 export default function Navbar() {
     const { mode, toggle } = useThemeStore()
@@ -19,9 +18,9 @@ export default function Navbar() {
     const [search, setSearch] = useState('')
 
     const logout = async () => {
-        await api.post('/api/auth/logout')
+        sessionStorage.clear()
         setUser(null)
-        navigate('/login')
+        navigate('/')
     }
 
     const handleSearch = (e: React.FormEvent) => {
