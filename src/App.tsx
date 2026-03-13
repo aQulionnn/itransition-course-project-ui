@@ -13,6 +13,7 @@ import Home from './pages/Home'
 import InventoryDetail from "./pages/InventoryDetail.tsx";
 import CreateItem from './pages/CreateItem'
 import EditItem from './pages/EditItem'
+import EditInventory from './pages/EditInventory'
 
 function App() {
     const setUser = useAuthStore(s => s.setUser)
@@ -44,7 +45,7 @@ function App() {
                         <Route path="/profile/:userId" element={<Profile />} />
                         <Route path="/inventories/create" element={user ? <CreateInventory /> : <Navigate to="/login" />} />
                         <Route path="/inventories/:id" element={<InventoryDetail />} />
-                        <Route path="/inventories/:id/edit" element={<div />} />
+                        <Route path="/inventories/:id/edit" element={user ? <EditInventory /> : <Navigate to="/login" />} />
                         <Route path="/inventories/:id/items/create" element={user ? <CreateItem /> : <Navigate to="/login" />} />
                         <Route path="/inventories/:id/items/:itemId/edit" element={user ? <EditItem /> : <Navigate to="/login" />} />
                     </Routes>

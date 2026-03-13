@@ -1,3 +1,5 @@
+import type { InventoryField } from './inventoryField'
+
 export interface Inventory {
     id: string
     title: string
@@ -7,6 +9,20 @@ export interface Inventory {
     categoryName: string
     itemsCount: number
     tags: string[]
+}
+
+export interface InventoryDetail {
+    id: string
+    title: string
+    description: string
+    imageUrl: string
+    isPublic: boolean
+    creatorId: string
+    creatorName: string
+    categoryName: string
+    itemsCount: number
+    tags: string[]
+    fields: InventoryField[]
 }
 
 export interface LatestInventory {
@@ -34,4 +50,12 @@ export interface CreateInventoryRequest {
     isPublic: boolean
     categoryId: string
     tags: string[]
+}
+
+export interface UpdateInventoryRequest {
+    title: string
+    description: string
+    imageUrl: string
+    isPublic: boolean
+    categoryId: string
 }

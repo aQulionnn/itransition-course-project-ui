@@ -44,7 +44,8 @@ export default function Login() {
     }
 
     const handleKey = (e: React.KeyboardEvent) => {
-        if (e.key === 'Enter') tab === 0 ? handleLogin() : handleRegister()
+        if (e.key !== 'Enter') return
+        if (tab === 0) { handleLogin() } else { handleRegister() }
     }
 
     return (

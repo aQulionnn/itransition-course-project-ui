@@ -14,7 +14,6 @@ export interface Item {
 }
 
 export interface CreateItemRequest {
-    customId: string
     fieldValues: { fieldId: string; value: string }[]
 }
 

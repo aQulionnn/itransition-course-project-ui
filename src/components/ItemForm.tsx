@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react'
+import {useState} from 'react'
 import {
     Box, TextField, Button, Typography, Checkbox,
     FormControlLabel, Paper
 } from '@mui/material'
-import type { InventoryField } from '../interfaces/inventoryField'
-import type { Item } from '../interfaces/item'
+import type {InventoryField} from '../interfaces/inventoryField'
+import type {Item} from '../interfaces/item'
 
 interface Props {
     fields: InventoryField[]
@@ -13,31 +13,30 @@ interface Props {
     onCancel: () => void
 }
 
-export default function ItemForm({ fields, initial, onSubmit, onCancel }: Props) {
-    const [customId, setCustomId] = useState(initial?.customId ?? '')
-    const [values, setValues] = useState<Record<string, string>>({})
+function initValues(fields: InventoryField[], initial?: Item): Record<string, string> {
+    const init: Record<string, string> = {}
+    fields.forEach(f => {
+        const existing = initial?.fieldValues.find(fv => fv.fieldId === f.id)
+        init[f.id] = existing?.value ?? (f.type === 'Boolean' ? 'false' : '')
+    })
+    return init
+}
 
-    useEffect(() => {
-        const init: Record<string, string> = {}
-        fields.forEach(f => {
-            const existing = initial?.fieldValues.find(fv => fv.fieldId === f.id)
-            init[f.id] = existing?.value ?? (f.type === 'Boolean' ? 'false' : '')
-        })
-        setValues(init)
-    }, [fields, initial])
+export default function ItemForm({fields, initial, onSubmit, onCancel}: Props) {
+    const [customId, setCustomId] = useState(initial?.customId ?? '')
+    const [values, setValues] = useState<Record<string, string>>(() => initValues(fields, initial))
 
     const handleChange = (fieldId: string, value: string) => {
-        setValues(prev => ({ ...prev, [fieldId]: value }))
+        setValues(prev => ({...prev, [fieldId]: value}))
     }
 
     const handleSubmit = async () => {
-        const fieldValues = fields.map(f => ({ fieldId: f.id, value: values[f.id] ?? '' }))
+        const fieldValues = fields.map(f => ({fieldId: f.id, value: values[f.id] ?? ''}))
         await onSubmit(customId, fieldValues)
     }
 
     const renderField = (field: InventoryField) => {
         const value = values[field.id] ?? ''
-
         if (field.type === 'Boolean') {
             return (
                 <FormControlLabel
@@ -52,7 +51,6 @@ export default function ItemForm({ fields, initial, onSubmit, onCancel }: Props)
                 />
             )
         }
-
         return (
             <TextField
                 key={field.id}
@@ -69,21 +67,23 @@ export default function ItemForm({ fields, initial, onSubmit, onCancel }: Props)
     }
 
     return (
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{p: 3}}>
             <Box display="flex" flexDirection="column" gap={2}>
-                <TextField
-                    label="Custom ID"
-                    value={customId}
-                    onChange={e => setCustomId(e.target.value)}
-                    fullWidth
-                />
+                {initial && (
+                    <TextField
+                        label="Custom ID"
+                        value={customId}
+                        onChange={e => setCustomId(e.target.value)}
+                        fullWidth
+                    />
+                )}
                 {fields.length > 0 && (
                     <Typography variant="subtitle2" color="text.secondary">Fields</Typography>
                 )}
                 {fields.map(renderField)}
                 <Box display="flex" gap={1} justifyContent="flex-end">
                     <Button onClick={onCancel}>Cancel</Button>
-                    <Button variant="contained" onClick={handleSubmit} disabled={!customId.trim()}>
+                    <Button variant="contained" onClick={handleSubmit} disabled={initial ? !customId.trim() : false}>
                         {initial ? 'Save' : 'Create'}
                     </Button>
                 </Box>

@@ -17,8 +17,8 @@ export default function CreateItem() {
         getInventoryFields(api, id!).then(setFields)
     }, [id])
 
-    const handleSubmit = async (customId: string, fieldValues: { fieldId: string; value: string }[]) => {
-        await createItem(api, id!, { customId, fieldValues })
+    const handleSubmit = async (_customId: string, fieldValues: { fieldId: string; value: string }[]) => {
+        await createItem(api, id!, { fieldValues })
         navigate(`/inventories/${id}`)
     }
 

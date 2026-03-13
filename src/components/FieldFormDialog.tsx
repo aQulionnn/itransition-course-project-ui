@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import {
     Dialog, DialogTitle, DialogContent, DialogActions,
     Button, TextField, FormControl, InputLabel, Select,
@@ -15,25 +15,11 @@ interface Props {
     initial?: InventoryField
 }
 
-export default function FieldFormDialog({ open, onClose, onSubmit, initial }: Props) {
-    const [title, setTitle] = useState('')
-    const [description, setDescription] = useState('')
-    const [type, setType] = useState<FieldType>('Text')
-    const [isDisplayed, setIsDisplayed] = useState(true)
-
-    useEffect(() => {
-        if (initial) {
-            setTitle(initial.title)
-            setDescription(initial.description)
-            setType(initial.type)
-            setIsDisplayed(initial.isDisplayed)
-        } else {
-            setTitle('')
-            setDescription('')
-            setType('Text')
-            setIsDisplayed(true)
-        }
-    }, [initial, open])
+function FieldFormDialogInner({ open, onClose, onSubmit, initial }: Props) {
+    const [title, setTitle] = useState(initial?.title ?? '')
+    const [description, setDescription] = useState(initial?.description ?? '')
+    const [type, setType] = useState<FieldType>(initial?.type ?? 'Text')
+    const [isDisplayed, setIsDisplayed] = useState(initial?.isDisplayed ?? true)
 
     const handleSubmit = async () => {
         await onSubmit({ title, description, type, isDisplayed })
@@ -69,4 +55,8 @@ export default function FieldFormDialog({ open, onClose, onSubmit, initial }: Pr
             </DialogActions>
         </Dialog>
     )
+}
+
+export default function FieldFormDialog(props: Props) {
+    return <FieldFormDialogInner key={props.initial?.id ?? 'new'} {...props} />
 }
